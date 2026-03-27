@@ -8,6 +8,18 @@ class HTMLNode:
     def __repr__(self):
         return f"HTMLNode({self.tag}, {self.value}, {self.children}, {self.props})"
     
+    def get_tag(self):
+        return self.tag
+    
+    def get_value(self):
+        return self.value
+    
+    def get_children(self):
+        return self.children
+    
+    def get_props(self):
+        return self.props
+    
     def to_html(self):
         raise NotImplementedError
     
