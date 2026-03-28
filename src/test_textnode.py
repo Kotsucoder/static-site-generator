@@ -1,6 +1,5 @@
 import unittest
-
-from textnode import TextNode, TextType, split_nodes_delimiter, text_node_to_html_node
+from textnode import *
 
 
 class TestTextNode(unittest.TestCase):
@@ -49,7 +48,16 @@ class TestTextNode(unittest.TestCase):
             final_html += i
         expected_result = "<p>The </p><b>quick</b><p> brown fox </p><i>jumped</i><p> over the </p><code>lazy</code><p> dog.</p>"
         self.assertEqual(final_html, expected_result)
-
+    
+    def test_image_extraction(self):
+        text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        matches = extract_markdown_images(text)
+        self.assertListEqual([("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")], matches)
+    
+    def test_link_extraction(self):
+        text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+        matches = extract_markdown_links(text)
+        self.assertListEqual([("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")], matches)
 
 if __name__ == "__main__":
     unittest.main()

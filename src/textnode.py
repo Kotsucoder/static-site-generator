@@ -15,6 +15,7 @@ Functions:
 from enum import Enum
 from typing import Optional
 from htmlnode import LeafNode
+from re import findall
 
 
 class TextType(Enum):
@@ -77,6 +78,7 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
     Returns:
         list[TextNode]: The list of TextNode objects split by the delimiter.
     """
+
     new_nodes = []
     for node in old_nodes:
         if node.text_type is not TextType.TEXT:
@@ -108,6 +110,7 @@ def text_node_to_html_node(text_node: TextNode) -> LeafNode:
     Raises:
         TypeError: text_node type must be a valid TextType
     """
+
     match(text_node.text_type):
         case TextType.TEXT:
             return LeafNode("p", text_node.text)
@@ -127,3 +130,33 @@ def text_node_to_html_node(text_node: TextNode) -> LeafNode:
             return LeafNode("img", None, {"src":text_node.url, "alt":text_node.text})
         case _:
             raise TypeError("text_node type must be a valid TextType")
+
+
+def extract_markdown_images(text: str) -> list[tuple[str,str]]:
+    """
+    Extracts markdown images from string.
+
+    Args:
+        text: The raw markdownstring to extract the images from.
+    
+    Returns:
+        list[tuple]: A list of tuples in the form (alt_text, url).
+    """
+
+    images: list[tuple[str,str]] = findall(r"!\[(.*?)\]\((.*?)\)", text)
+    return images
+
+
+def extract_markdown_links(text: str) -> list[tuple[str,str]]:
+    """
+    Extracts markdown hyperlinks from string.
+
+    Args:
+        text: The raw markdownstring to extract the hyperlink from.
+    
+    Returns:
+        list[tuple]: A list of tuples in the form (text, url).
+    """
+
+    links: list[tuple[str,str]] = findall(r"(?<!!)\[(.*?)\]\((.*?)\)", text)
+    return links

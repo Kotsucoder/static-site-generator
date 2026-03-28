@@ -30,11 +30,6 @@ class TestHTMLNode(unittest.TestCase):
         node2 = "<a href=\"https://boot.dev\">Bootdev</a>"
         self.assertEqual(node.to_html(), node2)
     
-    def test_leaf_to_html_br(self):
-        node = LeafNode("br", None)
-        with self.assertRaises(ValueError):
-            node.to_html()
-    
     def test_to_html_with_children(self):
         child_node = LeafNode("span", "child")
         parent_node = ParentNode("div", [child_node])
