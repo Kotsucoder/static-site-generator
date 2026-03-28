@@ -1,7 +1,6 @@
 import unittest
 
-from textnode import TextNode, TextType
-from main import split_nodes_delimiter, text_node_to_html_node
+from textnode import TextNode, TextType, split_nodes_delimiter, text_node_to_html_node
 
 
 class TestTextNode(unittest.TestCase):
@@ -32,14 +31,14 @@ class TestTextNode(unittest.TestCase):
 
     def test_none_url(self):
         node = TextNode("Bootdev", TextType.HYPERLINK)
-        self.assertIs(node.get_url(), None)
+        self.assertIs(node.url, None)
     
     def test_set_url(self):
         node = TextNode("Bootdev", TextType.HYPERLINK, "https://boot.dev")
-        self.assertIsInstance(node.get_url(), str)
+        self.assertIsInstance(node.url, str)
     
     def test_step_delimiter(self):
-        test_markdown = "The **quick** brown fox _jumped_ over the `lazy` dog."
+        test_markdown = [TextNode("The **quick** brown fox _jumped_ over the `lazy` dog.", TextType.TEXT)]
         get_bold = split_nodes_delimiter(test_markdown, "**", TextType.BOLD)
         get_italics = split_nodes_delimiter(get_bold, "_", TextType.ITALICS)
         get_codeblock = split_nodes_delimiter(get_italics, "`", TextType.CODEBLOCK)

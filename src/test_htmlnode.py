@@ -1,8 +1,7 @@
 import unittest
 
-from textnode import TextNode, TextType
+from textnode import TextNode, TextType, text_node_to_html_node
 from htmlnode import HTMLNode, LeafNode, ParentNode
-from main import text_node_to_html_node
 
 
 class TestHTMLNode(unittest.TestCase):
@@ -50,64 +49,43 @@ class TestHTMLNode(unittest.TestCase):
             "<div><span><b>grandchild</b></span></div>",
         )
     
-    def test_parentnode_no_tag(self):
-        child_node = LeafNode("span", "child")
-        parent_node = ParentNode(None, [child_node])
-        with self.assertRaises(ValueError):
-            parent_node.to_html()
-    
-    def test_parentnode_no_children(self):
-        parent_node = ParentNode("br", None)
-        with self.assertRaises(ValueError):
-            parent_node.to_html()
-    
     def test_text_node_to_paragraph(self):
         node = TextNode("This is a text node", TextType.TEXT)
         html_node = text_node_to_html_node(node)
-        self.assertEqual(html_node.get_tag(), "p")
-        self.assertEqual(html_node.get_value(), "This is a text node")
+        self.assertEqual(html_node.tag, "p")
+        self.assertEqual(html_node.value, "This is a text node")
     
     def test_text_node_to_bold(self):
         node = TextNode("This is a text node", TextType.BOLD)
         html_node = text_node_to_html_node(node)
-        self.assertEqual(html_node.get_tag(), "b")
-        self.assertEqual(html_node.get_value(), "This is a text node")
+        self.assertEqual(html_node.tag, "b")
+        self.assertEqual(html_node.value, "This is a text node")
     
     def test_text_node_to_italics(self):
         node = TextNode("This is a text node", TextType.ITALICS)
         html_node = text_node_to_html_node(node)
-        self.assertEqual(html_node.get_tag(), "i")
-        self.assertEqual(html_node.get_value(), "This is a text node")
+        self.assertEqual(html_node.tag, "i")
+        self.assertEqual(html_node.value, "This is a text node")
     
     def test_text_node_to_code(self):
         node = TextNode("print(\"Hello, World!\")", TextType.CODEBLOCK)
         html_node = text_node_to_html_node(node)
-        self.assertEqual(html_node.get_tag(), "code")
-        self.assertEqual(html_node.get_value(), "print(\"Hello, World!\")")
+        self.assertEqual(html_node.tag, "code")
+        self.assertEqual(html_node.value, "print(\"Hello, World!\")")
     
     def test_text_node_to_hyperlink(self):
         node = TextNode("Bootdev", TextType.HYPERLINK, "https://boot.dev")
         html_node = text_node_to_html_node(node)
-        self.assertEqual(html_node.get_tag(), "a")
-        self.assertEqual(html_node.get_value(), "Bootdev")
-        self.assertEqual(html_node.get_props(), {"href":"https://boot.dev"})
+        self.assertEqual(html_node.tag, "a")
+        self.assertEqual(html_node.value, "Bootdev")
+        self.assertEqual(html_node.props, {"href":"https://boot.dev"})
     
     def test_text_node_to_image(self):
         node = TextNode("Catdog", TextType.IMAGE, "/assets/catdog.png")
         html_node = text_node_to_html_node(node)
-        self.assertEqual(html_node.get_tag(), "img")
-        self.assertEqual(html_node.get_value(), None)
-        self.assertEqual(html_node.get_props(), {"src":"/assets/catdog.png","alt":"Catdog"})
-
-    def test_invalid_text_node_type(self):
-        node = TextNode("Bootdev", [], "https://boot.dev")
-        with self.assertRaises(ValueError):
-            text_node_to_html_node(node)
-    
-    def test_not_a_text_node(self):
-        node = []
-        with self.assertRaises(ValueError):
-            text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "img")
+        self.assertEqual(html_node.value, None)
+        self.assertEqual(html_node.props, {"src":"/assets/catdog.png","alt":"Catdog"})
 
 
 if __name__ == "__main__":

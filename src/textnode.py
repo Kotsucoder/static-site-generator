@@ -1,7 +1,34 @@
+"""
+This module provides objects that should be used for representing and working with Markdown syntax
+parsing. These objects provide a semantic representation of the syntax to make it easier to manage
+the raw text in a clear, defined data structure.
+
+Classes:
+    TextType: Represents the different types that a TextNode can represent.
+    TextNode: Data structure which semantically represents Markdown syntax into objects.
+
+Functions:
+    split_node_delimiter: Splits TextNodes by a delimiter.
+"""
+
+
 from enum import Enum
+from typing import Optional
+from htmlnode import LeafNode
 
 
 class TextType(Enum):
+    """
+    Represents the different types that a TextNode can represent.
+
+    Valid types include:
+        TextType.TEXT
+        TextType.BOLD
+        TextType.ITALICS
+        TextType.CODEBLOCK
+        TextType.HYPERLINK
+        TextType.IMAGE
+    """
     TEXT = "text"
     BOLD = "bold"
     ITALICS = "italics"
@@ -11,28 +38,92 @@ class TextType(Enum):
 
 
 class TextNode:
-    def __init__(self, text, text_type, url=None):
+    """
+    Data structure which semantically represents Markdown syntax into objects.
+
+    Attributes:
+        text: String representing the TextNode's contents.
+        text_type: TextType object defining the type of this node.
+        url: Optional string representing the url that may be attached to the node.
+    """
+
+    def __init__(self, text: str, text_type: TextType, url:Optional[str]=None) -> None:
         self.text = text
         self.text_type = text_type
         self.url = url
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if type(other) is TextNode:
-            sametext = self.text == other.get_text()
-            sametype = self.text_type == other.get_type()
-            sameurl = self.url == other.get_url()
+            sametext = self.text == other.text
+            sametype = self.text_type == other.text_type
+            sameurl = self.url == other.url
         else:
             return NotImplemented
         return sametext and sametype and sameurl
     
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"TextNode({self.text}, {self.text_type.value}, {self.url})"
+
+
+def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: TextType) -> list[TextNode]:
+    """
+    Splits TextNodes by a delimiter.
+
+    Args:
+        old_nodes: A list of TextNode objects.
+        delimiter: A string that is used to split the TextNode.
+        text_type: The TextType object representing the TextNode type that is split from the main text.
+
+    Returns:
+        list[TextNode]: The list of TextNode objects split by the delimiter.
+    """
+    new_nodes = []
+    for node in old_nodes:
+        if node.text_type is not TextType.TEXT:
+            new_nodes.append(node)
+        else:
+            split_node = node.text.split(delimiter)
+            text_node = True
+            types = {True: TextType.TEXT, False: text_type}
+            for new_node in split_node:
+                if new_node:
+                    create_node = TextNode(new_node, types[text_node])
+                    new_nodes.append(create_node)
+                text_node = not text_node
+    if node.text_type is not TextType.TEXT:
+        raise ValueError("delimiter must come in pairs.")
+    return new_nodes
+
+
+def text_node_to_html_node(text_node: TextNode) -> LeafNode:
+    """
+    Converts TextNode objects to LeafNode objects.
+
+    Args:
+        text_node: A TextNode object representing a Markdown segment.
     
-    def get_text(self):
-        return self.text
+    Returns:
+        LeafNode: A LeafNode object representing a HTML element derived from the Markdown.
     
-    def get_type(self):
-        return self.text_type
-    
-    def get_url(self):
-        return self.url
+    Raises:
+        TypeError: text_node type must be a valid TextType
+    """
+    match(text_node.text_type):
+        case TextType.TEXT:
+            return LeafNode("p", text_node.text)
+        case TextType.BOLD:
+            return LeafNode("b", text_node.text)
+        case TextType.ITALICS:
+            return LeafNode("i", text_node.text)
+        case TextType.CODEBLOCK:
+            return LeafNode("code", text_node.text)
+        case TextType.HYPERLINK:
+            if text_node.url is None:
+                raise ValueError("Hyperlinks must contain a URL.")
+            return LeafNode("a", text_node.text, {"href":text_node.url})
+        case TextType.IMAGE:
+            if text_node.url is None:
+                raise ValueError("Image objects must contain a URL.")
+            return LeafNode("img", None, {"src":text_node.url, "alt":text_node.text})
+        case _:
+            raise TypeError("text_node type must be a valid TextType")
