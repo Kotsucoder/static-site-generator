@@ -58,6 +58,30 @@ class TestTextNode(unittest.TestCase):
         text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
         matches = extract_markdown_links(text)
         self.assertListEqual([("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")], matches)
+    
+    def test_image_split(self):
+        text = "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png)"
+        text_node = [TextNode(text, TextType.TEXT)]
+        new_text = split_nodes_image(text_node)
+        expected_result = [
+            TextNode("This is text with an ", TextType.TEXT),
+            TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
+            TextNode(" and another ", TextType.TEXT),
+            TextNode("second image", TextType.IMAGE, "https://i.imgur.com/3elNhQu.png")
+        ]
+        self.assertEqual(new_text, expected_result)
+
+    def test_hyperlink_split(self):
+        text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+        text_node = [TextNode(text, TextType.TEXT)]
+        new_text = split_nodes_hyperlink(text_node)
+        expected_result = [
+            TextNode("This is text with a link ", TextType.TEXT),
+            TextNode("to boot dev", TextType.HYPERLINK, "https://www.boot.dev"),
+            TextNode(" and ", TextType.TEXT),
+            TextNode("to youtube", TextType.HYPERLINK, "https://www.youtube.com/@bootdotdev")
+        ]
+        self.assertEqual(new_text, expected_result)
 
 if __name__ == "__main__":
     unittest.main()

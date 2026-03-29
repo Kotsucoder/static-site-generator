@@ -160,3 +160,61 @@ def extract_markdown_links(text: str) -> list[tuple[str,str]]:
 
     links: list[tuple[str,str]] = findall(r"(?<!!)\[(.*?)\]\((.*?)\)", text)
     return links
+
+
+def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
+    """
+    Splits TextNodes, separating images from the text.
+
+    Args:
+        old_nodes: A list of TextNode objects.
+    
+    Returns:
+        list[TextNode]: The list of TextNode objects with the image part separated.
+    """
+
+    new_nodes = []
+    for node in old_nodes:
+        if node.text_type is not TextType.TEXT:
+            new_nodes.append(node)
+        else:
+            delimiters = extract_markdown_images(node.text)
+            working_text = node.text
+            for delimiter in delimiters:
+                delimiter_str = f"![{delimiter[0]}]({delimiter[1]})"
+                split_node = working_text.split(delimiter_str)
+                new_nodes.append(TextNode(split_node[0], TextType.TEXT))
+                new_nodes.append(TextNode(delimiter[0], TextType.IMAGE, delimiter[1]))
+                working_text = split_node[1]
+            if working_text:
+                new_nodes.append(TextNode(working_text, TextType.TEXT))
+    return new_nodes
+
+
+def split_nodes_hyperlink(old_nodes: list[TextNode]) -> list[TextNode]:
+    """
+    Splits TextNodes, separating hyperlinks from the text.
+
+    Args:
+        old_nodes: A list of TextNode objects.
+    
+    Returns:
+        list[TextNode]: The list of TextNode objects with the hyperlink part separated.
+    """
+
+    new_nodes = []
+    for node in old_nodes:
+        if node.text_type is not TextType.TEXT:
+            new_nodes.append(node)
+        else:
+            delimiters = extract_markdown_links(node.text)
+            working_text = node.text
+            for delimiter in delimiters:
+                delimiter_str = f"[{delimiter[0]}]({delimiter[1]})"
+                split_node = working_text.split(delimiter_str)
+                new_nodes.append(TextNode(split_node[0], TextType.TEXT))
+                new_nodes.append(TextNode(delimiter[0], TextType.HYPERLINK, delimiter[1]))
+                working_text = split_node[1]
+            if working_text:
+                new_nodes.append(TextNode(working_text, TextType.TEXT))
+    return new_nodes
