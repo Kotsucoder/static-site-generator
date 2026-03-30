@@ -218,3 +218,23 @@ def split_nodes_hyperlink(old_nodes: list[TextNode]) -> list[TextNode]:
             if working_text:
                 new_nodes.append(TextNode(working_text, TextType.TEXT))
     return new_nodes
+
+
+def create_textnode_object(text: str) -> list[TextNode]:
+    """
+    Generates TextNode objects from a given markdown string.
+
+    Args:
+        text: The markdown string to convert to TextNode objects.
+
+    Returns:
+        list[TextNode]: Generated List of TextNode objects.
+    """
+
+    initial_textnode = [TextNode(text, TextType.TEXT)]
+    bold_text = split_nodes_delimiter(initial_textnode, "**", TextType.BOLD)
+    italic_text = split_nodes_delimiter(bold_text, "_", TextType.ITALICS)
+    code_block = split_nodes_delimiter(italic_text, "`", TextType.CODEBLOCK)
+    links = split_nodes_hyperlink(code_block)
+    images = split_nodes_image(links)
+    return images
