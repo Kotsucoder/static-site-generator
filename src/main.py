@@ -1,6 +1,4 @@
-from textnode import TextType, TextNode, split_nodes_delimiter, text_node_to_html_node
-from htmlnode import HTMLNode, LeafNode
-from markdown import markdown_to_blocks, block_to_block_type, BlockType, markdown_to_html_node
+from markdown import BlockType, markdown_to_blocks, block_to_block_type, markdown_to_html_node
 import os
 import shutil
 
@@ -9,6 +7,7 @@ def main() -> None:
     """
     Main entry point for the program.
     """
+
     copy_contents("static", "public")
     generate_page("content", "template.html", "public")
 
@@ -68,6 +67,7 @@ def extract_title(markdown: str) -> str:
                 title = title.strip()
                 return title
     raise ValueError("Markdown file must contain a header.")
+
 
 def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
     """

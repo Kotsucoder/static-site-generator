@@ -9,6 +9,12 @@ Classes:
 
 Functions:
     split_node_delimiter: Splits TextNodes by a delimiter.
+    text_node_to_html_node: Converts TextNode objects to LeafNode objects.
+    extract_markdown_images: Extracts markdown images from string.
+    extract_markdown_links: Extracts markdown hyperlinks from string.
+    split_nodes_image: Splits TextNodes, separating images from the text.
+    split_nodes_hyperlink: Splits TextNodes, separating hyperlinks from the text.
+    create_textnode_object: Generates TextNode objects from a given markdown string.
 """
 
 

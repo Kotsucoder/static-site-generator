@@ -1,5 +1,14 @@
 """
 This module provides functions that manage Markdown text.
+
+Classes:
+    BlockType: Represents the types of Markdown blocks that can be represented.
+
+Functions:
+    markdown_to_blocks: This function converts a full markdown string into a list of blocks.
+    block_to_block_type: Takes in a markdown block and returns the block's type.
+    markdown_to_html_node: Converts a markdown string into nested HTML Nodes.
+    create_leafnodes: Creates a list of LeafNode objects.
 """
 
 
@@ -95,6 +104,16 @@ def block_to_block_type(markdown_block: str) -> BlockType:
 
 
 def markdown_to_html_node(markdown: str) -> ParentNode:
+    """
+    Converts a markdown string into nested HTML Nodes.
+
+    Args:
+        markdown: The markdown string.
+    
+    Returns:
+        ParentNode: A nested set of ParentNode and LeafNode objects.
+    """
+
     markdown_blocks = markdown_to_blocks(markdown)
     primary_parent = ParentNode("div", [])
     for block in markdown_blocks:
@@ -137,20 +156,19 @@ def markdown_to_html_node(markdown: str) -> ParentNode:
 
 
 def create_leafnodes(markdown: str) -> list[LeafNode]:
+    """
+    Creates a list of LeafNode objects.
+
+    Args:
+        markdown: Markdown string to get LeafNodes from.
+
+    Returns:
+        list[LeafNode]: A list of LeafNode objects.
+    """
+
     markdown_nl = markdown.replace("\n", " ")
     textnodes = create_textnode_object(markdown_nl)
     leafnodes = []
     for textnode in textnodes:
         leafnodes.append(text_node_to_html_node(textnode))
     return leafnodes
-
-if __name__ == "__main__":
-    md = """
-- One
-- Two
-- Three
-- Four **Bolded** Queens
-- Five _Italic_ Kings
-"""
-    node = markdown_to_html_node(md)
-    html = node.to_html()
