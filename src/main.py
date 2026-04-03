@@ -89,7 +89,7 @@ def generate_page(from_path: str, template_path: str, dest_path: str, basepath: 
             full_dest_path = os.path.join(dest_path, page)
             if not os.path.isfile(full_from_path):
                 os.mkdir(full_dest_path)
-                generate_page(full_from_path, template_path, full_dest_path)
+                generate_page(full_from_path, template_path, full_dest_path, basepath)
                 continue
             with open(full_from_path, "r") as file:
                 markdown_file = file.read()
