@@ -99,8 +99,8 @@ def generate_page(from_path: str, template_path: str, dest_path: str, basepath: 
             title = extract_title(markdown_file)
             template_file = template_file.replace("{{ Title }}", title)
             template_file = template_file.replace("{{ Content }}", html_page)
-            template_file = template_file.replace("href=\"/", f"href={basepath}")
-            template_file = template_file.replace("src=\"/", f"src={basepath}")
+            template_file = template_file.replace("href=\"/", f"href=\"{basepath}")
+            template_file = template_file.replace("src=\"/", f"src=\"{basepath}")
             with open(os.path.join(dest_path, page.replace(".md", ".html")), "w") as file:
                 file.write(template_file)
 
