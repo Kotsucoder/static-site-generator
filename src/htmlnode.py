@@ -10,7 +10,7 @@ Classes:
 """
 
 
-from typing import Optional
+from typing import Optional, Sequence
 
 
 class HTMLNode:
@@ -30,7 +30,7 @@ class HTMLNode:
     """
 
 
-    def __init__(self, tag:Optional[str]=None, value:Optional[str]=None, children:Optional[list['HTMLNode']]=None, props:Optional[dict[str,str]]=None) -> None:
+    def __init__(self, tag:Optional[str]=None, value:Optional[str]=None, children:Optional[Sequence['HTMLNode']]=None, props:Optional[dict[str,str]]=None) -> None:
         self.tag = tag
         self.value = value
         self.children = children
@@ -99,6 +99,7 @@ class LeafNode(HTMLNode):
 
 
 class ParentNode(HTMLNode):
+    children: list
     """
     Semantically represents HTML syntax into an object which provides a clear structure
     to more easily manage arbitrary HTML text. ParentNodes have children and no value.
@@ -114,7 +115,7 @@ class ParentNode(HTMLNode):
     """
 
 
-    def __init__(self, tag: str, children: list[HTMLNode], props:Optional[dict[str,str]]=None):
+    def __init__(self, tag: str, children: Sequence[HTMLNode], props:Optional[dict[str,str]]=None):
         super().__init__(tag, None, children, props)
     
     def __repr__(self) -> str:

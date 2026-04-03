@@ -46,7 +46,7 @@ class TestTextNode(unittest.TestCase):
         final_html = ""
         for i in formatted_html:
             final_html += i
-        expected_result = "<p>The </p><b>quick</b><p> brown fox </p><i>jumped</i><p> over the </p><code>lazy</code><p> dog.</p>"
+        expected_result = "The <b>quick</b> brown fox <i>jumped</i> over the <code>lazy</code> dog."
         self.assertEqual(final_html, expected_result)
     
     def test_image_extraction(self):

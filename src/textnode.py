@@ -113,7 +113,7 @@ def text_node_to_html_node(text_node: TextNode) -> LeafNode:
 
     match(text_node.text_type):
         case TextType.TEXT:
-            return LeafNode("p", text_node.text)
+            return LeafNode(None, text_node.text)
         case TextType.BOLD:
             return LeafNode("b", text_node.text)
         case TextType.ITALICS:
