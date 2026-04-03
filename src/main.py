@@ -1,15 +1,16 @@
 from markdown import BlockType, markdown_to_blocks, block_to_block_type, markdown_to_html_node
 import os
 import shutil
+import sys
 
 
-def main() -> None:
+def main(basepath="/") -> None:
     """
     Main entry point for the program.
     """
 
-    copy_contents("static", "public")
-    generate_page("content", "template.html", "public")
+    copy_contents("static", "docs")
+    generate_page("content", "template.html", "docs", basepath)
 
 
 def copy_contents(source: str, destination: str) -> None:
@@ -69,7 +70,7 @@ def extract_title(markdown: str) -> str:
     raise ValueError("Markdown file must contain a header.")
 
 
-def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
+def generate_page(from_path: str, template_path: str, dest_path: str, basepath: str="/") -> None:
     """
     Generates HTML documents from Markdown files using a HTML template.
 
@@ -98,9 +99,15 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
             title = extract_title(markdown_file)
             template_file = template_file.replace("{{ Title }}", title)
             template_file = template_file.replace("{{ Content }}", html_page)
+            template_file = template_file.replace("href=\"/", f"href={basepath}")
+            template_file = template_file.replace("src=\"/", f"src={basepath}")
             with open(os.path.join(dest_path, page.replace(".md", ".html")), "w") as file:
                 file.write(template_file)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        basepath = sys.argv[1]
+    except IndexError:
+        basepath = "/"
+    main(basepath)
