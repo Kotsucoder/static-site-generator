@@ -71,7 +71,7 @@ def extract_title(markdown: str) -> str:
 
 def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
     """
-    Generates a HTML document from a Markdown file using a HTML template.
+    Generates HTML documents from Markdown files using a HTML template.
 
     Args:
         from_path: The path to the directory containing the Markdown files to render as a string.
@@ -82,18 +82,24 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     if os.path.exists(from_path) and os.path.isdir(from_path):
         files = os.listdir(from_path)
-        with open(os.path.join(from_path, files[0]), "r") as file:
-            markdown_file = file.read()
-        with open(template_path, "r") as file:
-            template_file = file.read()
-        html_page = markdown_to_html_node(markdown_file).to_html()
-        title = extract_title(markdown_file)
-        template_file = template_file.replace("{{ Title }}", title)
-        template_file = template_file.replace("{{ Content }}", html_page)
-        if not os.path.exists(dest_path):
-            os.mkdir(dest_path)
-        with open(os.path.join(dest_path, files[0].replace(".md", ".html")), "w") as file:
-            file.write(template_file)
+        print(files)
+        for page in files:
+            full_from_path = os.path.join(from_path, page)
+            full_dest_path = os.path.join(dest_path, page)
+            if not os.path.isfile(full_from_path):
+                os.mkdir(full_dest_path)
+                generate_page(full_from_path, template_path, full_dest_path)
+                continue
+            with open(full_from_path, "r") as file:
+                markdown_file = file.read()
+            with open(template_path, "r") as file:
+                template_file = file.read()
+            html_page = markdown_to_html_node(markdown_file).to_html()
+            title = extract_title(markdown_file)
+            template_file = template_file.replace("{{ Title }}", title)
+            template_file = template_file.replace("{{ Content }}", html_page)
+            with open(os.path.join(dest_path, page.replace(".md", ".html")), "w") as file:
+                file.write(template_file)
 
 
 if __name__ == "__main__":

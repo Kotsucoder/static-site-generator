@@ -98,8 +98,8 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
                     create_node = TextNode(new_node, types[text_node])
                     new_nodes.append(create_node)
                 text_node = not text_node
-    if node.text_type is not TextType.TEXT:
-        raise ValueError("delimiter must come in pairs.")
+    # if node.text_type is not TextType.TEXT:
+    #     raise ValueError("delimiter must come in pairs.")
     return new_nodes
 
 
